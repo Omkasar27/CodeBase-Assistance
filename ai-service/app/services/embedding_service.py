@@ -1,17 +1,17 @@
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 from app.core.config import settings
 
 _model = None
 
 
-def get_embedding_model() -> SentenceTransformer:
+def get_embedding_model() -> TextEmbedding:
     global _model
     if _model is None:
-        _model = SentenceTransformer(settings.embedding_model_name)
+        _model = TextEmbedding(model_name=settings.embedding_model_name)
     return _model
 
 
 def generate_embeddings(texts: list[str]) -> list[list[float]]:
     model = get_embedding_model()
-    embeddings = model.encode(texts, show_progress_bar=False)
-    return embeddings.tolist()
+    embeddings = list(model.embed(texts))
+    return [emb.tolist() for emb in embeddings]
