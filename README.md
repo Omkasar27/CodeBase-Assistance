@@ -76,3 +76,131 @@ graph LR
 ---
 
 ## Project Structure
+├── client/ # React frontend
+│ └── src/
+│ ├── api/ # HTTP client wrappers
+│ ├── components/ # Reusable UI components
+│ ├── context/ # Auth context
+│ ├── hooks/ # React Query hooks
+│ ├── pages/ # Route-level pages
+│ └── router/
+│
+├── server/ # Node/Express backend
+│ └── src/
+│ ├── config/ # Env validation, DB connection
+│ ├── controllers/ # HTTP layer
+│ ├── middlewares/ # Auth, validation, error handling
+│ ├── models/ # Mongoose schemas
+│ ├── routes/
+│ ├── services/ # Business logic
+│ ├── utils/
+│ └── validators/ # Zod schemas
+│
+└── ai-service/ # Python/FastAPI AI service
+└── app/
+├── api/routes/ # FastAPI routers
+├── core/ # Config, security
+├── schemas/ # Pydantic models
+└── services/ # Chunking, embeddings, retrieval, LLM
+---
+
+## Running Locally
+
+### Prerequisites
+- Node.js 18+
+- Python 3.11.x (newer versions may lack precompiled wheels for some ML dependencies)
+- MongoDB Atlas account (free tier)
+- Groq API key ([console.groq.com](https://console.groq.com))
+- GitHub Personal Access Token (optional, for private repos)
+
+### 1. Backend
+```bash
+cd server
+npm install
+cp .env.example .env   # fill in your values
+npm run dev
+```
+
+### 2. AI Service
+```bash
+cd ai-service
+python -m venv venv
+venv\Scripts\activate       # Windows
+# source venv/bin/activate  # macOS/Linux
+pip install -r requirements.txt
+cp .env.example .env        # fill in your values
+uvicorn app.main:app --reload --port 8000
+```
+
+### 3. Frontend
+```bash
+cd client
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Visit `http://localhost:5173`.
+
+---
+
+## Environment Variables
+
+<details>
+<summary><code>server/.env</code></summary>
+
+| Variable | Description |
+|---|---|
+| `MONGODB_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Secret for signing JWTs |
+| `JWT_EXPIRES_IN` | Token expiry (e.g. `7d`) |
+| `ENCRYPTION_KEY` | 64-char hex string (32 bytes) for AES-256-GCM |
+| `GITHUB_API_BASE_URL` | `https://api.github.com` |
+| `AI_SERVICE_URL` | URL of the running AI service |
+| `INTERNAL_API_KEY` | Shared secret with the AI service |
+| `CLIENT_URL` | Frontend origin, for CORS |
+
+</details>
+
+<details>
+<summary><code>ai-service/.env</code></summary>
+
+| Variable | Description |
+|---|---|
+| `INTERNAL_API_KEY` | Must match the Node backend's value |
+| `GROQ_API_KEY` | Groq API key |
+| `GROQ_MODEL` | Groq model name (check console.groq.com for current models) |
+| `RETRIEVAL_TOP_K` | Number of chunks retrieved per query (default `5`) |
+
+</details>
+
+<details>
+<summary><code>client/.env</code></summary>
+
+| Variable | Description |
+|---|---|
+| `VITE_API_BASE_URL` | Node backend URL, e.g. `http://localhost:5000/api` |
+
+</details>
+
+---
+
+## API Overview
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` \| `/login` | Authentication |
+| POST | `/api/repos` | Connect a GitHub repository |
+| POST | `/api/repos/:id/index` | Index a repository into the vector store |
+| POST | `/api/repos/:repoId/sessions` | Create a chat conversation |
+| POST | `/api/sessions/:sessionId/query` | Ask a question (SSE stream) |
+| POST | `/api/sessions/:sessionId/regenerate` | Regenerate the last answer |
+
+---
+
+## Deployment Notes
+
+Deployed on free-tier infrastructure, which introduces one real tradeoff worth being explicit about: Render's free web services use an ephemeral filesystem, wiped on every restart/spin-down — so the on-disk vector store resets after ~15 minutes of inactivity. In a production deployment, this would be solved with a persistent disk or a managed vector database (e.g. Chroma Cloud, Pinecone) — both are drop-in swaps behind the existing `vectorstore_service.py` abstraction, requiring no changes elsewhere in the codebase.
+
+
+
