@@ -76,33 +76,43 @@ graph LR
 ---
 
 ## Project Structure
-├── client/ # React frontend
-│ └── src/
-│ ├── api/ # HTTP client wrappers
-│ ├── components/ # Reusable UI components
-│ ├── context/ # Auth context
-│ ├── hooks/ # React Query hooks
-│ ├── pages/ # Route-level pages
-│ └── router/
+
+```text
+.
+├── client/                         # React frontend
+│   └── src/
+│       ├── api/                    # HTTP client wrappers
+│       ├── components/             # Reusable UI components
+│       ├── context/                # Authentication context
+│       ├── hooks/                  # React Query hooks
+│       ├── pages/                  # Route-level pages
+│       ├── router/                 # Routing configuration
+│       └── ...
 │
-├── server/ # Node/Express backend
-│ └── src/
-│ ├── config/ # Env validation, DB connection
-│ ├── controllers/ # HTTP layer
-│ ├── middlewares/ # Auth, validation, error handling
-│ ├── models/ # Mongoose schemas
-│ ├── routes/
-│ ├── services/ # Business logic
-│ ├── utils/
-│ └── validators/ # Zod schemas
+├── server/                         # Node.js / Express backend
+│   └── src/
+│       ├── config/                 # Environment & database configuration
+│       ├── controllers/            # HTTP controllers
+│       ├── middlewares/            # Auth, validation, error handling
+│       ├── models/                 # Mongoose models
+│       ├── routes/                 # API routes
+│       ├── services/               # Business logic
+│       ├── utils/                  # Shared utilities
+│       ├── validators/             # Zod validation schemas
+│       └── ...
 │
-└── ai-service/ # Python/FastAPI AI service
-└── app/
-├── api/routes/ # FastAPI routers
-├── core/ # Config, security
-├── schemas/ # Pydantic models
-└── services/ # Chunking, embeddings, retrieval, LLM
----
+├── ai-service/                     # FastAPI AI service
+│   └── app/
+│       ├── api/
+│       │   └── routes/             # AI API endpoints
+│       ├── core/                   # Configuration & security
+│       ├── schemas/                # Pydantic models
+│       ├── services/               # Chunking, embeddings, retrieval, LLM
+│       └── ...
+│
+├── README.md
+└── ...
+```
 
 ## Running Locally
 
