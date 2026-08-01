@@ -1,11 +1,22 @@
 import { useState } from "react";
-import Button from "./Button.jsx";
+import { PlaceholdersAndVanishInput } from "./ui/placeholders-and-vanish-input.jsx";
+
+const EXAMPLE_PROMPTS = [
+  "What does this repository do?",
+  "Where is authentication handled?",
+  "Explain the main data flow",
+  "What are the API endpoints?",
+  "How is the database structured?",
+];
 
 function ChatInput({ onSend, disabled }) {
   const [value, setValue] = useState("");
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  function handleChange(e) {
+    setValue(e.target.value);
+  }
+
+  function handleSubmit() {
     const trimmed = value.trim();
     if (!trimmed || disabled) return;
     onSend(trimmed);
@@ -13,21 +24,12 @@ function ChatInput({ onSend, disabled }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3">
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Ask a question about this codebase..."
-        disabled={disabled}
-        className="flex-1 bg-surface border border-border rounded-lg px-4 py-3 text-textPrimary placeholder:text-textSecondary/50 outline-none focus:border-accent disabled:opacity-50"
-      />
-      <div className="w-24">
-        <Button type="submit" disabled={disabled || !value.trim()}>
-          Send
-        </Button>
-      </div>
-    </form>
+    <PlaceholdersAndVanishInput
+      placeholders={EXAMPLE_PROMPTS}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      disabled={disabled}
+    />
   );
 }
 
