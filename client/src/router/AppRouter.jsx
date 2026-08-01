@@ -7,6 +7,7 @@ import Settings from "../pages/Settings.jsx";
 import Chat from "../pages/Chat.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import Navbar from "../components/Navbar.jsx";
+import Insights from "../pages/Insights.jsx";
 
 function AppRouter() {
   return (
@@ -40,7 +41,16 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route
+        path="/repos/:id/insights"
+        element={
+          <ProtectedRoute>
+            <Insights />
+          </ProtectedRoute>
+        }
+      />
       </Routes>
+      
     </BrowserRouter>
   );
 }

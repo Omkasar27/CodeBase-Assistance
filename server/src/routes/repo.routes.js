@@ -13,6 +13,7 @@ import {
   createNewSession,
   getSessions,
 } from "../controllers/chatSession.controller.js";
+import { startAnalysis, getRepositoryInsights } from "../controllers/insight.controller.js";
 
 const router = Router();
 
@@ -25,5 +26,7 @@ router.delete("/:id", removeRepository);
 router.post("/:id/index", triggerIndexing);
 router.post("/:repoId/sessions", createNewSession);
 router.get("/:repoId/sessions", getSessions);
+router.post("/:id/analyze", startAnalysis);
+router.get("/:id/insights", getRepositoryInsights);
 
 export default router;

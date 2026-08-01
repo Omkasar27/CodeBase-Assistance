@@ -76,4 +76,98 @@ export async function streamQuery({ repoId, question, chatHistory }) {
   }
 }
 
+export async function generateSummary({ repoName, description, readmeContent, techStack }) {
+  try {
+    const response = await aiServiceClient.post(
+      "/insights/summary",
+      {
+        repo_name: repoName,
+        description: description || "",
+        readme_content: (readmeContent || "").slice(0, 8000),
+        tech_stack: techStack,
+      },
+      { timeout: 60000 }
+    );
+    return response.data.summary;
+  } catch (error) {
+    if (error.code === "ECONNREFUSED") {
+      throw new AppError("AI service is not reachable. Is it running?", 503);
+    }
+    throw new AppError("Failed to generate repository summary.", 502);
+  }
+}
+
+
+export async function generateArchitecture({ repoName, techStack, entryPoints, modules }) {
+  try {
+    const response = await aiServiceClient.post(
+      "/insights/architecture",
+      {
+        repo_name: repoName,
+        tech_stack: techStack,
+        entry_points: entryPoints,
+        modules: modules.map((m) => ({
+          name: m.name,
+          path: m.path,
+          files: m.files,
+        })),
+      },
+      { timeout: 60000 }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.code === "ECONNREFUSED") {
+      throw new AppError("AI service is not reachable. Is it running?", 503);
+    }
+    throw new AppError("Failed to generate architecture overview.", 502);
+  }
+}
+
+export async function generateRouteDescriptions({ repoName, routes }) {
+  try {
+    const response = await aiServiceClient.post(
+      "/insights/api-routes",
+      {
+        repo_name: repoName,
+        routes: routes.map((r) => ({
+          method: r.method,
+          path: r.path,
+          controller: r.controller,
+        })),
+      },
+      { timeout: 60000 }
+    );
+    return response.data.descriptions;
+  } catch (error) {
+    if (error.code === "ECONNREFUSED") {
+      throw new AppError("AI service is not reachable. Is it running?", 503);
+    }
+    throw new AppError("Failed to generate route descriptions.", 502);
+  }
+}
+
+
+export async function generateRoadmap({ repoName, summary, techStack, modules, apiRoutes, entryPoints }) {
+  try {
+    const response = await aiServiceClient.post(
+      "/insights/roadmap",
+      {
+        repo_name: repoName,
+        summary,
+        tech_stack: techStack,
+        modules: modules.map((m) => ({ name: m.name, path: m.path, purpose: m.purpose })),
+        api_route_count: apiRoutes.length,
+        entry_points: entryPoints,
+      },
+      { timeout: 60000 }
+    );
+    return response.data.roadmap;
+  } catch (error) {
+    if (error.code === "ECONNREFUSED") {
+      throw new AppError("AI service is not reachable. Is it running?", 503);
+    }
+    throw new AppError("Failed to generate learning roadmap.", 502);
+  }
+}
+
 export default aiServiceClient;

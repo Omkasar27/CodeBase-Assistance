@@ -84,12 +84,21 @@ function RepoCard({ repository }) {
         </a>
 
         {repository.indexingStatus === "completed" && (
-          <Link
-            to={`/repos/${repository._id}/chat`}
-            className="text-sm text-accent hover:underline"
-          >
-            Chat
-          </Link>
+          <>
+            <Link
+              to={`/repos/${repository._id}/chat`}
+              className="text-sm text-accent hover:underline"
+            >
+              Chat
+            </Link>
+
+            <Link
+              to={`/repos/${repository._id}/insights`}
+              className="text-xs text-textSecondary hover:bg-surfaceHover rounded px-2 py-1"
+            >
+              Insights
+            </Link>
+          </>
         )}
 
 
