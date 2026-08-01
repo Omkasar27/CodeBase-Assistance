@@ -1,18 +1,26 @@
 # AI Codebase Assistant
 
-A full-stack RAG (Retrieval-Augmented Generation) application that lets developers connect a GitHub repository and ask natural-language questions about the codebase, with answers grounded in the actual source code via semantic search.
+A full-stack platform that helps developers understand unfamiliar codebases faster — combining a real-time RAG (Retrieval-Augmented Generation) chat with an automated **Repository Intelligence** pipeline that generates architecture insights, API documentation, and an onboarding roadmap for any connected GitHub repository.
 
 **Live demo:** [code-base-assistance.vercel.app](https://code-base-assistance.vercel.app)
 
-> Note: the AI service runs on free-tier hosting with ephemeral storage — if the vector index appears empty after a period of inactivity, click **Re-index** on the repository before chatting. See [Deployment Notes](#deployment-notes) for why.
+> Note: the AI service runs on free-tier hosting with ephemeral storage — if the vector index appears empty after a period of inactivity, click **Re-index** before chatting. See [Deployment Notes](#deployment-notes).
 
 ---
 
 ## What it does
 
-1. Connect a public or private GitHub repository (via an encrypted personal access token)
-2. Index it — the backend fetches source files, splits them into semantically meaningful chunks using language-aware parsing, generates vector embeddings, and stores them in a per-repository vector database
-3. Ask questions in a chat interface — the system retrieves the most relevant code chunks and streams a grounded answer back in real time, citing the specific files it used
+### 1. Chat with your codebase (RAG)
+Connect a repository, index it (language-aware chunking → embeddings → vector store), then ask natural-language questions in a streaming chat interface, grounded in the actual source code with cited file sources. Supports multiple independent conversation threads per repository, with answer regeneration.
+
+### 2. Automated Repository Intelligence
+Trigger a one-click analysis that generates, in real time over WebSockets:
+- **Tech Stack Detection** — languages, frameworks, package managers (deterministic, parsed from manifest files)
+- **AI-Generated Summary** — grounded in the actual README, not generic filler
+- **Architecture Overview + Module Explorer** — inferred from real folder structure, with each module's likely purpose and key files
+- **API Explorer** — routes extracted directly from source code (Express, FastAPI, Flask), including verified auth-requirement flags
+- **Learning Roadmap** — an ordered, onboarding-focused reading plan, grounded in the repo's own detected modules
+- **Repository Health Dashboard** — largest modules, complexity hotspots, config files, TODO count
 
 ---
 
@@ -21,15 +29,16 @@ A full-stack RAG (Retrieval-Augmented Generation) application that lets develope
 ```mermaid
 graph LR
     subgraph Client
-        A[React + Vite<br/>Tailwind, TanStack Query]
+        A[React + Vite<br/>Tailwind, TanStack Query,<br/>Socket.IO Client]
     end
 
     subgraph Backend
-        B[Node.js / Express<br/>Auth, Repo Management,<br/>Orchestration]
+        B[Node.js / Express<br/>Auth, Repo Management,<br/>Async Job Orchestration]
+        S[Socket.IO<br/>Real-time Progress]
     end
 
     subgraph AI Service
-        C[Python / FastAPI<br/>Chunking, Embeddings,<br/>RAG Pipeline]
+        C[Python / FastAPI<br/>Chunking, Embeddings,<br/>RAG + Intelligence Generation]
     end
 
     D[(MongoDB Atlas)]
@@ -38,6 +47,8 @@ graph LR
     G[Groq LLM API]
 
     A -- REST + SSE --> B
+    A <-- WebSocket --> S
+    S --- B
     B -- Internal API<br/>+ Shared Secret --> C
     B --> D
     B --> F
@@ -45,27 +56,26 @@ graph LR
     C --> G
 ```
 
-**Why three services instead of one backend?** Node handles I/O-bound work (auth, orchestration, CRUD) while Python owns the AI/ML ecosystem (LangChain, ChromaDB, embeddings) — each service scales and deploys independently, and the AI service is never exposed directly to the internet, only reachable through Node via an internal API key.
+**Why two AI-driven features share one pipeline architecture:** both Chat and Repository Intelligence follow the same core pattern — Node orchestrates and persists, Python handles ML/LLM work, and results are scoped per-user, per-repository at the data layer. Repository Intelligence adds an async job + WebSocket layer on top, since generating six insight types (several requiring LLM calls) is too slow for a synchronous request/response cycle — a deliberate architectural evolution from the chat feature's simpler request/response model.
 
 ---
 
 ## Key engineering decisions
 
-- **Language-aware code chunking** — instead of naive fixed-size text splitting, code is split using LangChain's language-specific splitters that prefer function/class boundaries, preserving semantic coherence for better retrieval.
-- **Per-repository vector isolation** — each indexed repository gets its own ChromaDB collection, so retrieval queries are structurally incapable of leaking chunks across repos or users.
-- **Authorization at the data layer, not just the route layer** — every database query is scoped by `owner: userId` at the query level (not just checked in a middleware), closing a common class of IDOR (Insecure Direct Object Reference) vulnerabilities.
-- **Encrypted secrets at rest** — GitHub personal access tokens are encrypted with AES-256-GCM before storage and never exposed back to the client after saving.
-- **Real-time streaming via SSE** — LLM responses stream token-by-token from Groq → FastAPI → Express → the browser, using a raw Node stream pipe (not buffered), while Express simultaneously taps the same stream to persist the final message to MongoDB — two independent consumers of one stream, with zero added latency to the client.
-- **Service-to-service authentication** — the internal AI service requires a shared API key on every request, even though it's not meant to be publicly reachable, as defense-in-depth against network misconfiguration.
-- **Deployment-driven architecture swap** — the embedding pipeline originally used `sentence-transformers` (PyTorch-based) locally; hitting a 512MB memory ceiling on free-tier hosting led to swapping in `fastembed` (ONNX-based, no PyTorch) with zero changes to any other part of the RAG pipeline, validating the service abstraction layer built early on.
+- **Deterministic over LLM wherever facts matter.** Tech stack detection, API route extraction, and health metrics are all computed via parsing/heuristics, not LLM inference — the LLM is only used to *describe* already-verified facts (route purposes, module summaries), never to invent them. This was a deliberate defense against hallucination risk in factual claims.
+- **One batched LLM call per insight type, not one call per item.** Architecture/Module analysis, route descriptions, and the learning roadmap all send their full candidate set to Groq in a single request, rather than looping — controlling both latency and cost.
+- **Isolated failure boundaries.** A failure generating one insight type (e.g., the roadmap) doesn't discard already-successfully-generated insights from earlier steps in the same pipeline run — each step persists independently.
+- **Real-time progress via Socket.IO, authenticated and room-scoped.** WebSocket connections require the same JWT used for REST, and clients can only join a repository's progress room after a server-side ownership check — mirroring the `owner: userId` authorization pattern used throughout the REST API.
+- **Honest UI disclosure of AI limitations.** Where an insight is inferred from structure rather than verified from content (e.g., module purposes), the UI says so explicitly rather than implying deeper analysis occurred.
+- **Deployment-driven architecture swap.** The embedding pipeline originally used `sentence-transformers` (PyTorch-based) locally; hitting a 512MB memory ceiling on free-tier hosting led to swapping in `fastembed` (ONNX-based) with zero changes to the rest of the RAG pipeline.
 
 ---
 
 ## Tech Stack
 
-**Frontend:** React (Vite), Tailwind CSS, React Router, TanStack Query, Axios
+**Frontend:** React (Vite), Tailwind CSS, React Router, TanStack Query, Axios, Socket.IO Client
 
-**Backend:** Node.js, Express, MongoDB (Mongoose), JWT Authentication
+**Backend:** Node.js, Express, Socket.IO, MongoDB (Mongoose), JWT Authentication
 
 **AI Service:** Python, FastAPI, LangChain, ChromaDB, FastEmbed, Groq API
 
@@ -78,47 +88,42 @@ graph LR
 ## Project Structure
 
 ```text
-.
-├── client/                         # React frontend
-│   └── src/
-│       ├── api/                    # HTTP client wrappers
-│       ├── components/             # Reusable UI components
-│       ├── context/                # Authentication context
-│       ├── hooks/                  # React Query hooks
-│       ├── pages/                  # Route-level pages
-│       ├── router/                 # Routing configuration
-│       └── ...
+├── client/ # React frontend
+│ └── src/
+│ ├── api/ # HTTP + WebSocket client wrappers
+│ ├── components/ # Reusable UI components
+│ ├── context/ # Auth context
+│ ├── hooks/ # React Query + Socket.IO hooks
+│ ├── lib/ # Socket.IO client singleton
+│ ├── pages/ # Route-level pages
+│ └── router/
 │
-├── server/                         # Node.js / Express backend
-│   └── src/
-│       ├── config/                 # Environment & database configuration
-│       ├── controllers/            # HTTP controllers
-│       ├── middlewares/            # Auth, validation, error handling
-│       ├── models/                 # Mongoose models
-│       ├── routes/                 # API routes
-│       ├── services/               # Business logic
-│       ├── utils/                  # Shared utilities
-│       ├── validators/             # Zod validation schemas
-│       └── ...
+├── server/ # Node/Express backend
+│ └── src/
+│ ├── config/ # Env validation, DB connection
+│ ├── controllers/ # HTTP layer
+│ ├── middlewares/ # Auth, validation, error handling
+│ ├── models/ # Mongoose schemas
+│ ├── routes/
+│ ├── services/ # Business logic
+│ ├── sockets/ # Socket.IO server + room auth
+│ ├── utils/ # Deterministic detectors (tech stack, routes, health, modules)
+│ └── validators/ # Zod schemas
 │
-├── ai-service/                     # FastAPI AI service
-│   └── app/
-│       ├── api/
-│       │   └── routes/             # AI API endpoints
-│       ├── core/                   # Configuration & security
-│       ├── schemas/                # Pydantic models
-│       ├── services/               # Chunking, embeddings, retrieval, LLM
-│       └── ...
-│
-├── README.md
-└── ...
+└── ai-service/ # Python/FastAPI AI service
+└── app/
+├── api/routes/ # FastAPI routers
+├── core/ # Config, security
+├── schemas/ # Pydantic models
+└── services/ # Chunking, embeddings, retrieval, LLM, insight generation
 ```
+---
 
 ## Running Locally
 
 ### Prerequisites
 - Node.js 18+
-- Python 3.11.x (newer versions may lack precompiled wheels for some ML dependencies)
+- Python 3.11.x
 - MongoDB Atlas account (free tier)
 - Groq API key ([console.groq.com](https://console.groq.com))
 - GitHub Personal Access Token (optional, for private repos)
@@ -127,7 +132,7 @@ graph LR
 ```bash
 cd server
 npm install
-cp .env.example .env   # fill in your values
+cp .env.example .env
 npm run dev
 ```
 
@@ -135,10 +140,9 @@ npm run dev
 ```bash
 cd ai-service
 python -m venv venv
-venv\Scripts\activate       # Windows
-# source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env        # fill in your values
+cp .env.example .env
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -154,47 +158,6 @@ Visit `http://localhost:5173`.
 
 ---
 
-## Environment Variables
-
-<details>
-<summary><code>server/.env</code></summary>
-
-| Variable | Description |
-|---|---|
-| `MONGODB_URI` | MongoDB Atlas connection string |
-| `JWT_SECRET` | Secret for signing JWTs |
-| `JWT_EXPIRES_IN` | Token expiry (e.g. `7d`) |
-| `ENCRYPTION_KEY` | 64-char hex string (32 bytes) for AES-256-GCM |
-| `GITHUB_API_BASE_URL` | `https://api.github.com` |
-| `AI_SERVICE_URL` | URL of the running AI service |
-| `INTERNAL_API_KEY` | Shared secret with the AI service |
-| `CLIENT_URL` | Frontend origin, for CORS |
-
-</details>
-
-<details>
-<summary><code>ai-service/.env</code></summary>
-
-| Variable | Description |
-|---|---|
-| `INTERNAL_API_KEY` | Must match the Node backend's value |
-| `GROQ_API_KEY` | Groq API key |
-| `GROQ_MODEL` | Groq model name (check console.groq.com for current models) |
-| `RETRIEVAL_TOP_K` | Number of chunks retrieved per query (default `5`) |
-
-</details>
-
-<details>
-<summary><code>client/.env</code></summary>
-
-| Variable | Description |
-|---|---|
-| `VITE_API_BASE_URL` | Node backend URL, e.g. `http://localhost:5000/api` |
-
-</details>
-
----
-
 ## API Overview
 
 | Method | Endpoint | Description |
@@ -204,13 +167,19 @@ Visit `http://localhost:5173`.
 | POST | `/api/repos/:id/index` | Index a repository into the vector store |
 | POST | `/api/repos/:repoId/sessions` | Create a chat conversation |
 | POST | `/api/sessions/:sessionId/query` | Ask a question (SSE stream) |
-| POST | `/api/sessions/:sessionId/regenerate` | Regenerate the last answer |
+| POST | `/api/repos/:id/analyze` | Trigger repository intelligence analysis (`202`, async) |
+| GET | `/api/repos/:id/insights` | Fetch current insight data |
+| WS | `join:repo` / `insight:progress` / `insight:completed` | Real-time analysis progress |
 
 ---
 
 ## Deployment Notes
 
-Deployed on free-tier infrastructure, which introduces one real tradeoff worth being explicit about: Render's free web services use an ephemeral filesystem, wiped on every restart/spin-down — so the on-disk vector store resets after ~15 minutes of inactivity. In a production deployment, this would be solved with a persistent disk or a managed vector database (e.g. Chroma Cloud, Pinecone) — both are drop-in swaps behind the existing `vectorstore_service.py` abstraction, requiring no changes elsewhere in the codebase.
+Deployed on free-tier infrastructure. Two real tradeoffs worth being explicit about:
+
+1. Render's free web services use an ephemeral filesystem, wiped on restart/spin-down — the on-disk vector store resets after ~15 minutes of inactivity. A production deployment would use a persistent disk or managed vector database (drop-in swaps behind `vectorstore_service.py`).
+2. WebSocket connections are dropped when the free Node service spins down from inactivity — reconnection is handled client-side on next page load, but there's currently no mid-analysis reconnection/replay if a job was running during a spin-down.
+
 
 
 
