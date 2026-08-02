@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { motion, useMotionValue, useMotionTemplate } from "motion/react";
 import { cn } from "@/lib/utils";
 
-export function CardSpotlight({ children, className, spotlightColor = "rgba(35, 131, 226, 0.15)" }) {
+export function CardSpotlight({ children, className, spotlightColor = "rgba(88, 166, 255, 0.15)" }) {
   const divRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const mouseX = useMotionValue(0);
@@ -24,7 +24,7 @@ export function CardSpotlight({ children, className, spotlightColor = "rgba(35, 
       onMouseEnter={() => setIsFocused(true)}
       onMouseLeave={() => setIsFocused(false)}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-white p-6",
+        "relative overflow-hidden rounded-xl border border-border bg-sidebar p-6",
         className
       )}
     >

@@ -1,7 +1,7 @@
 import { useAuth } from "../hooks/useAuth.js";
 import { useRepositories } from "../hooks/useRepositories.js";
 import ConnectRepoForm from "../components/ConnectRepoForm.jsx";
-import RepoCard from "../components/RepoCard.jsx";
+import RepoListRow from "../components/RepoListRow.jsx";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -42,9 +42,9 @@ function Dashboard() {
         )}
 
         {repositories && repositories.length > 0 && (
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {repositories.map((repo) => (
-              <RepoCard key={repo._id} repository={repo} />
+              <RepoListRow key={repo._id} repository={repo} />
             ))}
           </div>
         )}

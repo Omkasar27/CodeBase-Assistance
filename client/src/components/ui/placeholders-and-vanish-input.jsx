@@ -59,7 +59,7 @@ export function PlaceholdersAndVanishInput({
 
     const fontSize = parseFloat(computedStyles.getPropertyValue("font-size"));
     ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
-    ctx.fillStyle = "#37352F";
+    ctx.fillStyle = "#E6EDF3";
     ctx.fillText(value, 16, 40);
 
     const imageData = ctx.getImageData(0, 0, 800, 800);
@@ -167,8 +167,8 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "w-full relative max-w-xl mx-auto bg-white h-12 rounded-full overflow-hidden border border-border shadow-sm transition duration-200",
-        value && "bg-sidebar",
+        "w-full relative max-w-xl mx-auto bg-sidebar h-12 rounded-full overflow-hidden border border-border shadow-sm transition duration-200",
+        value && "bg-surfaceHover",
         disabled && "opacity-60"
       )}
       onSubmit={handleSubmit}
@@ -201,7 +201,7 @@ export function PlaceholdersAndVanishInput({
       <button
         disabled={!value || disabled}
         type="submit"
-        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-surfaceHover bg-accent transition duration-200 flex items-center justify-center"
+        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-border bg-accent transition duration-200 flex items-center justify-center"
       >
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"

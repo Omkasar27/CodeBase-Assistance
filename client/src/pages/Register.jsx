@@ -46,8 +46,8 @@ function Register() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 bg-sidebar">
-      <div className="shadow-input mx-auto w-full max-w-md rounded-2xl bg-white p-4 md:p-8 border border-border">
+    <main className="min-h-screen flex items-center justify-center px-6 bg-background">
+      <div className="mx-auto w-full max-w-md rounded-2xl bg-sidebar p-4 md:p-8 border border-border">
         <h2 className="text-xl font-bold text-textPrimary">Create your account</h2>
         <p className="mt-2 max-w-sm text-sm text-textSecondary">
           Connect a repository and start asking your codebase questions in minutes.
@@ -96,7 +96,7 @@ function Register() {
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
           <button
-            className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-accent to-accent/80 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-accent to-accent/80 font-medium text-background shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] disabled:opacity-50 disabled:cursor-not-allowed"
             type="submit"
             disabled={isLoading}
           >

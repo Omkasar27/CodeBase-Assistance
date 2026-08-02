@@ -30,7 +30,7 @@ function ProgressStepper({ insight }) {
                 ? "bg-accentSoft text-accent border-accent/30"
                 : status === "running"
                 ? "bg-surfaceHover text-textPrimary border-border animate-pulse"
-                : "bg-white text-textSecondary border-border"
+                : "bg-background text-textSecondary border-border"
             }`}
           >
             <span

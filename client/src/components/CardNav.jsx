@@ -49,8 +49,8 @@ function CardNav({ ease = "power3.out" }) {
         },
         {
           label: "Account",
-          bgClass: "bg-textPrimary",
-          textClass: "text-white",
+          bgClass: "bg-surfaceHover",
+          textClass: "text-textPrimary",
           links: [
             { label: "Settings", onClick: goTo("/settings") },
             { label: `Log out (${user?.name || ""})`, onClick: handleLogout },
@@ -90,7 +90,7 @@ function CardNav({ ease = "power3.out" }) {
           ],
         },
       ];
-
+      
   const calculateHeight = () => {
     const navEl = navRef.current;
     if (!navEl) return 260;
@@ -241,7 +241,7 @@ function CardNav({ ease = "power3.out" }) {
           <button
             type="button"
             onClick={goTo(isAuthenticated ? "/dashboard" : "/register")}
-            className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 items-center h-full font-medium cursor-pointer transition-colors duration-300 bg-accent text-white hover:bg-accent/90"
+            className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 items-center h-full font-medium cursor-pointer transition-colors duration-300 bg-accent text-background hover:bg-accent/90"
           >
             {isAuthenticated ? "Dashboard" : "Get Started"}
           </button>

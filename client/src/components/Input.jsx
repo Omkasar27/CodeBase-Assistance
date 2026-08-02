@@ -7,8 +7,8 @@ function Input({ label, error, ...props }) {
         </label>
       )}
       <input
-        className={`w-full bg-surface border rounded-lg px-4 py-2.5 text-textPrimary placeholder:text-textSecondary/50 outline-none transition-colors focus:border-accent ${
-          error ? "border-red-500" : "border-border"
+        className={`w-full bg-sidebar border rounded px-3 py-2 text-sm text-textPrimary placeholder:text-textSecondary/60 outline-none transition-colors focus:border-accent ${
+          error ? "border-red-400" : "border-border"
         }`}
         {...props}
       />
