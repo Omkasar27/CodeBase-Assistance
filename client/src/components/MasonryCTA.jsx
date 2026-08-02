@@ -2,15 +2,15 @@ import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 
 const PLACEHOLDER_ITEMS = [
-  { label: "Chat streaming UI", height: "h-64" },
-  { label: "Repository dashboard", height: "h-40" },
-  { label: "Module explorer", height: "h-52" },
-  { label: "API route list", height: "h-36" },
-  { label: "Learning roadmap", height: "h-56" },
-  { label: "Architecture overview", height: "h-44" },
-  { label: "Tech stack detection", height: "h-40" },
-  { label: "Health dashboard", height: "h-60" },
-  { label: "Session sidebar", height: "h-48" },
+  { image: "/masonry/Github1.jpg", height: "h-64" },
+  { image: "/masonry/Github2.png", height: "h-40" },
+  { image: "/masonry/Github3.png", height: "h-52" },
+  { image: "/masonry/Github4.png", height: "h-48" },
+
+  { image: "/masonry/Github1.jpg", height: "h-56" },
+  { image: "/masonry/Github2.png", height: "h-36" },
+  { image: "/masonry/Github3.png", height: "h-60" },
+  { image: "/masonry/Github4.png", height: "h-44" },
 ];
 
 function MasonryCTA() {
@@ -22,22 +22,24 @@ function MasonryCTA() {
       <div className="columns-2 sm:columns-3 md:columns-4 gap-3 p-3">
         {PLACEHOLDER_ITEMS.map((item, i) => (
           <motion.div
-            key={item.label}
+            key={i}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.05 }}
-            className={`mb-3 break-inside-avoid rounded-xl border border-border bg-sidebar flex items-center justify-center overflow-hidden ${item.height}`}
+            className={`mb-3 break-inside-avoid overflow-hidden rounded-xl border border-border ${item.height}`}
           >
-            <p className="font-mono text-[10px] text-textSecondary/70 text-center px-3">
-              [ {item.label} ]
-            </p>
+            <img
+              src={item.image}
+              alt=""
+              className="h-full w-full object-cover transition duration-500 hover:scale-105 brightness-75 hover:brightness-100"
+            />
           </motion.div>
         ))}
       </div>
 
       {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/40 flex flex-col items-center justify-center text-center px-6">
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/40 flex flex-col items-center justify-center text-center px-6">
         <h2 className="text-2xl md:text-3xl font-semibold text-textPrimary mb-3 max-w-lg">
           Understand your codebase in minutes, not days.
         </h2>
