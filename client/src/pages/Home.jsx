@@ -76,7 +76,7 @@ function Home() {
 
         {/* ================= HERO ================= */}
 
-        <section className="mx-auto flex min-h-[90vh] max-w-7xl flex-col items-center justify-center px-6 py-20">
+        <section className="mx-auto flex min-h-[70vh] max-w-7xl flex-col items-center justify-center px-6 py-16">
 
           <h1 className="mx-auto max-w-5xl text-center text-4xl font-bold text-textPrimary md:text-6xl lg:text-7xl">
             {headline.split(" ").map((word, index) => (
@@ -135,29 +135,7 @@ function Home() {
             >
               View on GitHub
             </a>
-          </motion.div>
-
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              delay: 1.2,
-            }}
-            className="mt-20 w-full max-w-5xl rounded-3xl border border-border bg-sidebar p-5 shadow-xl"
-          >
-            <div className="flex aspect-video items-center justify-center rounded-2xl border border-border bg-background">
-              <p className="px-8 text-center font-mono text-sm text-textSecondary">
-                [ Screenshot or screen recording of the chat / insights UI goes
-                here ]
-              </p>
-            </div>
-          </motion.div>
+          </motion.div>  
         </section>
 
         {/* ================= BUILT WITH ================= */}
