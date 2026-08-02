@@ -2,6 +2,8 @@ import HeroSectionOne from "../components/HeroSectionOne.jsx";
 import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid.jsx";
 import { InfiniteMovingCards } from "../components/ui/infinite-moving-cards.jsx";
 import ArchitectureDiagram from "../components/ArchitectureDiagram.jsx";
+import MasonryCTA from "../components/MasonryCTA.jsx";
+import Footer from "../components/Footer.jsx";
 
 const FEATURES = [
   {
@@ -87,13 +89,11 @@ function Home() {
             />
           ))}
         </BentoGrid>
-
-
-
-
+        <MasonryCTA />
       </section>
-
+      <Footer />
     </main>
+    
   );
 }
 

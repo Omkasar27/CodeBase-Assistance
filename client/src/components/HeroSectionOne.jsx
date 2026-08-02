@@ -57,11 +57,12 @@ export default function HeroSectionOne() {
           >
             Get Started
           </button>
+          
           <a
             href="https://github.com/Omkasar27/CodeBase-Assistance"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-60 transform rounded-lg border border-border bg-white px-6 py-2 text-center font-medium text-textPrimary transition-all duration-300 hover:-translate-y-0.5 hover:bg-sidebar"
+            className="w-60 transform rounded-lg border border-border bg-sidebar px-6 py-2 text-center font-medium text-textPrimary transition-all duration-300 hover:-translate-y-0.5 hover:bg-surfaceHover"
           >
             View on GitHub
           </a>
@@ -73,7 +74,7 @@ export default function HeroSectionOne() {
           transition={{ duration: 0.3, delay: 1.3 }}
           className="relative z-10 mt-16 rounded-3xl border border-border bg-sidebar p-4 shadow-md"
         >
-          <div className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-white">
+          <div className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-background">
             <p className="font-mono text-sm text-textSecondary px-8 text-center">
               [ Screenshot or screen recording of the chat / insights UI goes here ]
             </p>

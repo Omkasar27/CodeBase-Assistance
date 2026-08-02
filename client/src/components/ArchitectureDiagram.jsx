@@ -11,13 +11,13 @@ import {
 
 import { FaDatabase, FaRobot } from "react-icons/fa";
 
-function Node({ innerRef, icon }) {
+function Node({ innerRef, label }) {
   return (
     <div
       ref={innerRef}
-      className="z-10 flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-white shadow-md transition-all duration-300 hover:scale-110"
+      className="z-10 flex h-16 w-32 items-center justify-center rounded-xl border border-border bg-sidebar px-2 text-center text-xs font-medium text-textPrimary shadow-sm"
     >
-      {icon}
+      {label}
     </div>
   );
 }

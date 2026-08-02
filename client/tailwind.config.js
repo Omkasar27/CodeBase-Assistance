@@ -4,21 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Current design system (light, Notion/GitHub-inspired)
-        background: "#FFFFFF",
-        sidebar: "#F7F7F5",
-        surfaceHover: "#EFEFED",
-        border: "#E9E9E7",
-        textPrimary: "#37352F",
-        textSecondary: "#787774",
-        accent: "#2383E2",
-        accentSoft: "#EBF3FC",
+        // Dark theme (GitHub Dark-inspired)
+        background: "#0D1117",
+        sidebar: "#161B22",
+        surfaceHover: "#1F2937",
+        border: "#30363D",
+        textPrimary: "#E6EDF3",
+        textSecondary: "#8B949E",
+        accent: "#58A6FF",
+        accentSoft: "#1F3A5F",
 
-        // Legacy aliases — kept so pages not yet migrated off the old dark
-        // theme (Chat, Insights, Settings, etc.) don't break. Remove once
-        // every page has been redesigned.
-        surface: "#FFFFFF",
-        accentMuted: "#1B6FC2",
+        // Legacy aliases — kept mapped to dark equivalents so any
+        // not-yet-migrated page doesn't break.
+        surface: "#161B22",
+        accentMuted: "#79C0FF",
       },
       fontFamily: {
         sans: [

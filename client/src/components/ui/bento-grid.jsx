@@ -17,7 +17,7 @@ export const BentoGridItem = ({ className, title, description, header, icon }) =
   return (
     <div
       className={cn(
-        "group/bento row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-border bg-white p-4 transition duration-200 hover:shadow-lg",
+        "group/bento row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-border bg-sidebar p-4 transition duration-200 hover:border-accent/40 hover:shadow-lg",
         className
       )}
     >
