@@ -8,6 +8,7 @@ import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import RotatingText from "../components/RotatingText.jsx";
 
+import { AnimatedCounter } from "../components/AnimatedCounter.jsx";
 
 import {
   MessageSquare,
@@ -18,26 +19,21 @@ import {
   Activity,
 } from "lucide-react";
 
+
+
 const FEATURES = [
   {
     title: "Chat With Your Codebase",
-    description:
-      "Ask natural-language questions and receive answers grounded in your repository.",
+    description: "Ask natural-language questions and receive answers grounded in your repository.",
     className: "md:col-span-2 md:row-span-2",
-    icon: <MessageSquare size={18} className="text-accent" />,
+    featured: true,
+    icon: <MessageSquare size={16} className="text-accent" />,
     header: (
       <div className="rounded-lg border border-border bg-background p-4 font-mono text-sm">
-        <div className="text-textSecondary">
-          &gt; Where is JWT authentication implemented?
-        </div>
-
+        <div className="text-textSecondary">&gt; Where is JWT authentication implemented?</div>
         <div className="mt-4 rounded-md bg-sidebar p-3">
           <p className="text-accent">AI Assistant</p>
-
-          <p className="mt-2 text-textPrimary">
-            Authentication is handled in:
-          </p>
-
+          <p className="mt-2 text-textPrimary">Authentication is handled in:</p>
           <ul className="mt-2 space-y-1 text-textSecondary">
             <li>📄 middleware/auth.js</li>
             <li>✓ verifyToken()</li>
@@ -46,120 +42,93 @@ const FEATURES = [
         </div>
       </div>
     ),
+    ghostIcon: <MessageSquare size={100} strokeWidth={1} />,
   },
-
+  {
+    title: "Repository Health",
+    description: "High-level repository metrics in seconds.",
+    className: "md:col-span-2",
+    icon: <Activity size={16} className="text-accent" />,
+    header: (
+      <div className="grid grid-cols-4 gap-3 text-center">
+        <div className="rounded-lg bg-background p-3">
+          <div className="text-xl font-bold text-accent"><AnimatedCounter to={143} /></div>
+          <div className="text-xs text-textSecondary">Files</div>
+        </div>
+        <div className="rounded-lg bg-background p-3">
+          <div className="text-xl font-bold text-accent"><AnimatedCounter to={812} /></div>
+          <div className="text-xs text-textSecondary">Functions</div>
+        </div>
+        <div className="rounded-lg bg-background p-3">
+          <div className="text-xl font-bold text-accent"><AnimatedCounter to={14} /></div>
+          <div className="text-xs text-textSecondary">TODOs</div>
+        </div>
+        <div className="rounded-lg bg-background p-3">
+          <div className="text-xl font-bold text-green-400"><AnimatedCounter to={92} suffix="%" /></div>
+          <div className="text-xs text-textSecondary">Health</div>
+        </div>
+      </div>
+    ),
+    ghostIcon: <Activity size={90} strokeWidth={1} />,
+  },
   {
     title: "Tech Stack Detection",
     description: "Automatically detects languages and frameworks.",
-    icon: <Boxes size={18} className="text-accent" />,
+    icon: <Boxes size={16} className="text-accent" />,
     header: (
       <div className="flex flex-wrap gap-2">
-        {[
-          "React",
-          "Node.js",
-          "Express",
-          "MongoDB",
-          "Python",
-          "LangChain",
-        ].map((item) => (
-          <span
-            key={item}
-            className="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent"
-          >
+        {["React", "Node.js", "Express", "MongoDB", "Python"].map((item) => (
+          <span key={item} className="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">
             {item}
           </span>
         ))}
       </div>
     ),
+    ghostIcon: <Boxes size={80} strokeWidth={1} />,
   },
-
   {
     title: "Module Explorer",
     description: "Repository structure organized automatically.",
-    icon: <FolderTree size={18} className="text-accent" />,
+    icon: <FolderTree size={16} className="text-accent" />,
     header: (
-      <div className="rounded-lg bg-background p-4 font-mono text-sm text-textSecondary">
-        📁 src
-        <br />
-        ├── components
-        <br />
-        ├── hooks
-        <br />
-        ├── services
-        <br />
-        ├── routes
-        <br />
-        └── utils
+      <div className="rounded-lg bg-background p-3 font-mono text-xs text-textSecondary">
+        📁 src<br />├── components<br />├── services<br />└── routes
       </div>
     ),
+    ghostIcon: <FolderTree size={80} strokeWidth={1} />,
   },
-
   {
     title: "API Explorer",
     description: "Every endpoint extracted from the repository.",
-    icon: <Route size={18} className="text-accent" />,
+    className: "md:col-span-2",
+    icon: <Route size={16} className="text-accent" />,
     header: (
-      <div className="space-y-2 text-sm font-mono">
-        <div className="flex justify-between rounded bg-background px-3 py-2">
-          <span className="text-green-400">GET</span>
-          <span>/api/repos</span>
+      <div className="grid grid-cols-3 gap-2 text-xs font-mono">
+        <div className="rounded bg-background px-2 py-1.5 flex justify-between">
+          <span className="text-green-400">GET</span><span>/repos</span>
         </div>
-
-        <div className="flex justify-between rounded bg-background px-3 py-2">
-          <span className="text-blue-400">POST</span>
-          <span>/api/chat</span>
+        <div className="rounded bg-background px-2 py-1.5 flex justify-between">
+          <span className="text-blue-400">POST</span><span>/chat</span>
         </div>
-
-        <div className="flex justify-between rounded bg-background px-3 py-2">
-          <span className="text-red-400">DELETE</span>
-          <span>/api/repos/:id</span>
+        <div className="rounded bg-background px-2 py-1.5 flex justify-between">
+          <span className="text-red-400">DEL</span><span>/repos</span>
         </div>
       </div>
     ),
+    ghostIcon: <Route size={90} strokeWidth={1} />,
   },
-
   {
     title: "Learning Roadmap",
     description: "Step-by-step onboarding generated from the codebase.",
-    icon: <Map size={18} className="text-accent" />,
+    icon: <Map size={16} className="text-accent" />,
     header: (
-      <div className="space-y-2 text-sm">
+      <div className="space-y-1.5 text-xs text-textSecondary">
         <div>✓ Project Structure</div>
         <div>✓ Authentication</div>
         <div>✓ API Layer</div>
-        <div>✓ AI Service</div>
-        <div>✓ Vector Search</div>
       </div>
     ),
-  },
-
-  {
-    title: "Repository Health",
-    description: "High-level repository metrics in seconds.",
-    icon: <Activity size={18} className="text-accent" />,
-    header: (
-      <div className="grid grid-cols-2 gap-3 text-center">
-        <div className="rounded-lg bg-background p-3">
-          <div className="text-xl font-bold text-accent">143</div>
-          <div className="text-xs text-textSecondary">Files</div>
-        </div>
-
-        <div className="rounded-lg bg-background p-3">
-          <div className="text-xl font-bold text-accent">812</div>
-          <div className="text-xs text-textSecondary">Functions</div>
-        </div>
-
-        <div className="rounded-lg bg-background p-3">
-          <div className="text-xl font-bold text-accent">14</div>
-          <div className="text-xs text-textSecondary">TODOs</div>
-        </div>
-
-        <div className="rounded-lg bg-background p-3">
-          <div className="text-xl font-bold text-green-400">92%</div>
-          <div className="text-xs text-textSecondary">Health</div>
-        </div>
-      </div>
-    ),
+    ghostIcon: <Map size={80} strokeWidth={1} />,
   },
 ];
 
@@ -172,8 +141,13 @@ function Home() {
   return (
     <main className="relative min-h-screen overflow-x-hidden">
       {/* Aurora Background */}
-      <div className="fixed inset-0 -z-10">
-        <Aurora />
+       <div className="fixed inset-0 -z-10">
+        <Aurora
+          colorStops={["#1F3A5F", "#58A6FF", "#1F3A5F"]}
+          amplitude={0.6}
+          blend={0.3}
+        />
+        <div className="absolute inset-0 bg-background/50" />
       </div>
 
       <div className="relative z-10">
@@ -251,17 +225,10 @@ function Home() {
           </p>
 
           <BentoGrid>
-            {FEATURES.map((feature) => (
-              <BentoGridItem
-                key={feature.title}
-                title={feature.title}
-                description={feature.description}
-                header={feature.header}
-                icon={feature.icon}
-                className={feature.className}
-              />
-            ))}
-          </BentoGrid>
+          {FEATURES.map((feature, i) => (
+            <BentoGridItem key={feature.title} index={i} {...feature} />
+          ))}
+        </BentoGrid>
         </section>
 
 

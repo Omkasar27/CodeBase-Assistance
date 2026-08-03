@@ -8,6 +8,7 @@ import {
   useDeleteSession,
 } from "../hooks/useChatSessions.js";
 
+
 function SessionSidebar({ repoId, activeSessionId }) {
   const navigate = useNavigate();
   const { data: sessions, isLoading } = useSessions(repoId);

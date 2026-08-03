@@ -8,7 +8,7 @@ import { CardSpotlight } from "../components/ui/card-spotlight.jsx";
 import { Badge } from "../components/ui/badge.jsx";
 import { AccordionItem } from "../components/ui/accordion.jsx";
 import { Timeline } from "../components/ui/timeline.jsx";
-import ArchitectureDiagram from "../components/ArchitectureDiagram.jsx";
+
 import { CheckCircle2, Circle } from "lucide-react";
 
 function Insights() {
@@ -122,18 +122,6 @@ function Insights() {
               </section>
             )}
 
-            {/* Architecture — Animated Beam */}
-            {insight.architectureOverview && (
-              <section>
-                <h2 className="text-sm font-medium text-textSecondary mb-3 uppercase tracking-wide">
-                  Architecture
-                </h2>
-                <p className="text-sm text-textPrimary leading-relaxed mb-4">
-                  {insight.architectureOverview}
-                </p>
-                <ArchitectureDiagram />
-              </section>
-            )}
 
             {/* Modules — Accordion */}
             {insight.modules?.length > 0 && (
